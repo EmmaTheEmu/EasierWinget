@@ -10,9 +10,9 @@ function Setup-Winget{
     $latestWingetMsixBundle = $latestWingetMsixBundleUri.Split("/")[-1]
     Invoke-WebRequest -Uri $latestWingetMsixBundleUri -OutFile "c:\windows\temp\$latestWingetMsixBundle"
     # System user has issues. Commeting to test without them.
-    # Invoke-WebRequest -Uri https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx -OutFile "c:\windows\temp\Microsoft.VCLibs.x64.14.00.Desktop.appx"
-    # Add-AppxPackage "c:\windows\temp\Microsoft.VCLibs.x64.14.00.Desktop.appx"
-    Add-AppxProvisionedPackage -Online -PackagePath "c:\windows\temp\$latestWingetMsixBundle" -SkipLicense | Out-Null
+    Invoke-WebRequest -Uri https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx -OutFile "c:\windows\temp\Microsoft.VCLibs.x64.14.00.Desktop.appx"
+    Add-AppxPackage "c:\windows\temp\Microsoft.VCLibs.x64.14.00.Desktop.appx"
+    Add-AppxPackage "c:\windows\temp\$latestWingetMsixBundle"
 }
 
 function Install-Winget([string]$argument){
