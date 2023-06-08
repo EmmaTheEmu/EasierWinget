@@ -4,7 +4,7 @@
 #Function declerations#
 #######################
 
-function Install-Winget{
+function Setup-Winget{
     $progressPreference = 'silentlyContinue'
     $latestWingetMsixBundleUri = $(Invoke-RestMethod https://api.github.com/repos/microsoft/winget-cli/releases/latest).assets.browser_download_url | Where-Object {$_.EndsWith(".msixbundle")}
     $latestWingetMsixBundle = $latestWingetMsixBundleUri.Split("/")[-1]
@@ -64,7 +64,7 @@ $Winget = Resolve-Path "C:\Program Files\WindowsApps\Microsoft.DesktopAppInstall
 
 if(!$winget){
     Write-Host "Winget not found!`nInstalling now..."
-    Install-Winget
+    Setup-Winget
     $Winget = Resolve-Path "C:\Program Files\WindowsApps\Microsoft.DesktopAppInstaller_*_x64__*"
     
     if($winget){
