@@ -16,7 +16,7 @@ function Setup-Winget{
 
 function Install-Winget([string]$argument){
     #Hides agreements, uses specific ID and hides installer.
-    & $winget install -e --accept-package-agreements --id "$Argument" -h
+    & $winget install -e --accept-source-agreements --accept-package-agreements --id "$Argument" -h
 }
 
 function Search-Winget([string]$argument){
