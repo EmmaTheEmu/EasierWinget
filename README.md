@@ -4,4 +4,4 @@ Hopefully this helps to resolve it by reinstalling it and automatically setting 
 
 To use this script, open the raw file and paste this command into powershell:
 
-irm <raw url> | iex
+irm (enter the RAW URL) | iex
