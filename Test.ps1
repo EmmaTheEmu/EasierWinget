@@ -22,7 +22,7 @@ function Install-Winget([string]$argument){
 function Search-Winget([string]$argument){
     #Specified Winget as source, since we only use package names.
     #MS Store Provides bad package names. It's to avoid later confusion.
-    & $winget search "$Argument" --accept-source-agreements -s winget
+    & $winget search --accept-source-agreements -s winget "$argument"
 }
 function Main{
     Clear-Host
