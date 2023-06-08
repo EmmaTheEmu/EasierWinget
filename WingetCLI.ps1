@@ -29,7 +29,6 @@ function Main{
     Write-Host "Press 0 to quit"
 
     $Selection = Read-Host "Enter app name you wish to install"
-    Write-Host `n
     if ($Selection.Equals(0)){Exit}
     
     #Create an array to store filtered results.
@@ -46,6 +45,7 @@ function Main{
         }
     }
     $i = 1
+    # Lists all items in the array (Unfiltered has empty spaces, that's why it's not used.)
     Foreach($Item in $ResultsFiltered)
     {
         Write-Host $i ' ' $Item
