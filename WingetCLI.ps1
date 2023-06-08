@@ -12,7 +12,7 @@ function Setup-Winget{
     # System user has issues. Commeting to test without them.
     # Invoke-WebRequest -Uri https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx -OutFile "c:\windows\temp\Microsoft.VCLibs.x64.14.00.Desktop.appx"
     # Add-AppxPackage "c:\windows\temp\Microsoft.VCLibs.x64.14.00.Desktop.appx"
-    Add-AppxProvisionedPackage -Online -PackagePath "c:\windows\temp\$latestWingetMsixBundle" -SkipLicense
+    Add-AppxProvisionedPackage -Online -PackagePath "c:\windows\temp\$latestWingetMsixBundle" -SkipLicense | Out-Null
 }
 
 function Install-Winget([string]$argument){
