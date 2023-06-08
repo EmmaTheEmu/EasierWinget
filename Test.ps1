@@ -5,31 +5,59 @@
 #######################
 
 function Install-Winget{
-$progressPreference = 'silentlyContinue'
-$latestWingetMsixBundleUri = $(Invoke-RestMethod https://api.github.com/repos/microsoft/winget-cli/releases/latest).assets.browser_download_url | Where-Object {$_.EndsWith(".msixbundle")}
-$latestWingetMsixBundle = $latestWingetMsixBundleUri.Split("/")[-1]
-Invoke-WebRequest -Uri $latestWingetMsixBundleUri -OutFile "c:\windows\temp\$latestWingetMsixBundle"
-Invoke-WebRequest -Uri https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx -OutFile "c:\windows\temp\Microsoft.VCLibs.x64.14.00.Desktop.appx"
-Add-AppxPackage "c:\windows\temp\Microsoft.VCLibs.x64.14.00.Desktop.appx"
-Add-AppxPackage "c:\windows\temp\$latestWingetMsixBundle"
+    $progressPreference = 'silentlyContinue'
+    $latestWingetMsixBundleUri = $(Invoke-RestMethod https://api.github.com/repos/microsoft/winget-cli/releases/latest).assets.browser_download_url | Where-Object {$_.EndsWith(".msixbundle")}
+    $latestWingetMsixBundle = $latestWingetMsixBundleUri.Split("/")[-1]
+    Invoke-WebRequest -Uri $latestWingetMsixBundleUri -OutFile "c:\windows\temp\$latestWingetMsixBundle"
+    Invoke-WebRequest -Uri https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx -OutFile "c:\windows\temp\Microsoft.VCLibs.x64.14.00.Desktop.appx"
+    Add-AppxPackage "c:\windows\temp\Microsoft.VCLibs.x64.14.00.Desktop.appx"
+    Add-AppxPackage "c:\windows\temp\$latestWingetMsixBundle"
 }
 
-function Winget-Install([string]$argument){
-    & $winget $Command $Argument --accept-package-agreements --accept-source-agreements
+function Install-Winget([string]$argument){
+    #Hides agreements, uses specific ID and hides installer.
+    & $winget install -e --accept-package-agreements --id "$Argument" -h
 }
 
-function Winget-Search([string]$argument){
-    & $winget $Command $Argument --accept-package-agreements --accept-source-agreements
+function Search-Winget([string]$argument){
+    #Specified Winget as source, since we only use package names.
+    #MS Store Provides bad package names. It's to avoid later confusion.
+    & $winget search "$Argument" --accept-source-agreements -s winget
 }
 function Main{
-    Switch($Selection){
-        1 {Winget-Search}
-        2 {Winget-Install}
-        0 {Return}
+    Clear-Host
+    Write-Host "Press 0 to quit"
+
+    $Selection = Read-Host "Enter app name you wish to install"
+    Write-Host `n
+    if ($Selection.Equals(0)){Return}
+    
+    #Create an array to store filtered results.
+    #Winget is not native powershell, so we must take the string output
+    #And convert it into a string where we filter everything.
+    $ResultsFiltered = [System.Collections.ArrayList]::new()
+    $Results = Search-Winget $Selection
+    Foreach($Search in $Results)
+    {
+        $Search = [regex]::Match($Search, "\b\w+(\.\w+)+\b")
+        if ($search.value -match "[a-z]"){
+            #Every added result would output an integer.
+            $ResultsFiltered.add($Search.value) | Out-Null
+        }
+    }
+    $i = 1
+    Foreach($Item in $ResultsFiltered)
+    {
+        Write-Host $i ' ' $Item
+        $i++
+    }
+
+    $Selection = Read-Host "Select which app you wish to install"
+    if ($ResultsFiltered[$Selection-1]){
+        Install-Winget $ResultsFiltered[$Selection-1]
     }
 }
 
-#### Main Code
 #Check if Winget is installed.
 Write-Host "Checking for Winget."
 $Winget = Resolve-Path "C:\Program Files\WindowsApps\Microsoft.DesktopAppInstaller_*_x64__*"
@@ -57,12 +85,7 @@ else{
 $Winget = $Winget.path + "\winget.exe"
 $Selection = 0
 
-
-Write-Host "What would you like to do?"
-Write-Host "1. Search"
-Write-Host "2. Install"
-Write-Host "0. Quit"
-
-$Selection = Read-Host "What would you like to do?"
-
-Main
+#Makes the main function loop infinitely.
+while($true){
+    Main
+}
