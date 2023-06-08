@@ -30,7 +30,7 @@ function Main{
 
     $Selection = Read-Host "Enter app name you wish to install"
     Write-Host `n
-    if ($Selection.Equals(0)){Return}
+    if ($Selection.Equals(0)){Exit}
     
     #Create an array to store filtered results.
     #Winget is not native powershell, so we must take the string output
