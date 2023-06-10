@@ -9,7 +9,7 @@ $latestWingetZIP = "https://github.com/EmmaTheEmu/EasierWinget/raw/Testing/Winge
 #########################
 
 function Setup-Winget{
-
+    Write-Host "DEBUG: $Env:UserName"
     if($Env:UserName -ne "SYSTEM")
     {
         $progressPreference = 'silentlyContinue'
@@ -41,7 +41,7 @@ function Install-Winget([string]$argument){
         Start-Sleep 2
     }
     else{
-        Write-Host "Error! The application is either already installed or there was an issue installing it."
+        Write-Host "Error! The application is either already installed or there was an issue installing it." 
         Start-Sleep 2
     }
 }
