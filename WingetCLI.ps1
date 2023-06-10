@@ -81,6 +81,7 @@ function Main{
     }
 
     $Selection = Read-Host "Select which app you wish to install"
+    if ($Selection -eq "0"){Return}
     if ($ResultsFiltered[$Selection-1]){
         Install-Winget $ResultsFiltered[$Selection-1]
     }
