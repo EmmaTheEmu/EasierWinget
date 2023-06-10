@@ -73,6 +73,11 @@ function Main{
         }
     }
     $i = 1
+    # If there are no results, don't ask what to install.
+    if($ResultsFiltered.Count -eq 0){
+        Write-Host "No results found!"
+        Start-sleep 2
+        Return}
     # Lists all items in the array (Unfiltered has empty spaces, that's why it's not used.)
     Foreach($Item in $ResultsFiltered)
     {
