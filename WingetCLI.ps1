@@ -23,7 +23,7 @@ function Setup-Winget{
     }
     else {
         $latestWingetZIPName = $latestWingetZIP.Split("/")[-1]
-        Invoke-WebRequest -Uri $latestWingetMsixBundleUri -OutFile "$DownloadFolder\$latestWingetZIPName"
+        Invoke-WebRequest -Uri $latestWingetZIP -OutFile "$DownloadFolder\$latestWingetZIPName"
         Expand-Archive -path "$DownloadFolder\$latestWingetZIPName" -DestinationPath $DownloadFolder
 
         Return Resolve-Path "C:\Windows\Temp\Winget"
