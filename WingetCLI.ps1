@@ -1,22 +1,37 @@
 #Requires -RunAsAdministrator
 
-#######################
-#Function declerations#
-#######################
+#########################
+# Function declerations #
+#########################
 
 function Setup-Winget{
-    $progressPreference = 'silentlyContinue'
-    $latestWingetMsixBundleUri = $(Invoke-RestMethod https://api.github.com/repos/microsoft/winget-cli/releases/latest).assets.browser_download_url | Where-Object {$_.EndsWith(".msixbundle")}
-    $latestWingetMsixBundle = $latestWingetMsixBundleUri.Split("/")[-1]
-    Invoke-WebRequest -Uri $latestWingetMsixBundleUri -OutFile "c:\windows\temp\$latestWingetMsixBundle"
-    Invoke-WebRequest -Uri https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx -OutFile "c:\windows\temp\Microsoft.VCLibs.x64.14.00.Desktop.appx"
-    Add-AppxPackage "c:\windows\temp\Microsoft.VCLibs.x64.14.00.Desktop.appx"
-    Add-AppxPackage "c:\windows\temp\$latestWingetMsixBundle"
+
+    if($Env:UserName -ne "SYSTEM")
+    {
+        $progressPreference = 'silentlyContinue'
+        $latestWingetMsixBundleUri = $(Invoke-RestMethod https://api.github.com/repos/microsoft/winget-cli/releases/latest).assets.browser_download_url | Where-Object {$_.EndsWith(".msixbundle")}
+        $latestWingetMsixBundle = $latestWingetMsixBundleUri.Split("/")[-1]
+        Invoke-WebRequest -Uri $latestWingetMsixBundleUri -OutFile "c:\windows\temp\$latestWingetMsixBundle"
+        Invoke-WebRequest -Uri https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx -OutFile "c:\windows\temp\Microsoft.VCLibs.x64.14.00.Desktop.appx"
+        Add-AppxPackage "c:\windows\temp\Microsoft.VCLibs.x64.14.00.Desktop.appx"
+        Add-AppxPackage "c:\windows\temp\$latestWingetMsixBundle"
+    }
+    else {
+        # TODO: ZIP Install in C:\Temp
+    }
+
 }
 
 function Install-Winget([string]$argument){
     #Hides agreements, uses specific ID and hides installer.
     & $winget install -e --accept-source-agreements --accept-package-agreements --id "$Argument" -h
+    if($?)
+    {
+        Write-Host "The Application has been installed successfully!"
+    }
+    else{
+        Write-Host "Error! Application has encountered an error."
+    }
 }
 
 function Search-Winget([string]$argument){
@@ -58,9 +73,14 @@ function Main{
     }
 }
 
+########################
+# Preparing the script #
+########################
+
 #Check if Winget is installed.
 Write-Host "Checking for Winget."
 $Winget = Resolve-Path "C:\Program Files\WindowsApps\Microsoft.DesktopAppInstaller_*_x64__*"
+# TODO: Add temp install system user
 
 if(!$winget){
     Write-Host "Winget not found!`nInstalling now..."
