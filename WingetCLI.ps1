@@ -9,6 +9,7 @@ $latestWingetZIP = "https://github.com/EmmaTheEmu/EasierWinget/raw/Testing/Winge
 #########################
 
 function Setup-Winget{
+    
     Write-Host "DEBUG: $Env:UserName"
     if($Env:UserName -ne "SYSTEM")
     {
