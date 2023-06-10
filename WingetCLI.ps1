@@ -9,12 +9,7 @@ $latestWingetZIP = "https://github.com/EmmaTheEmu/EasierWinget/raw/Testing/Winge
 #########################
 
 function Setup-Winget{
-$debug2 = [Environment]::UserName
-$debug3 = whoami
-    Write-Host "DEBUG: $Env:UserName"
-    Write-Host "DEBUG:" $debug2
-    Write-Host "Debug:" $debug3
-    if($Env:UserName -ne "SYSTEM")
+    if($([Environment]::UserName) -ne "SYSTEM")
     {
         $progressPreference = 'silentlyContinue'
         $latestWingetMsixBundleUri = $(Invoke-RestMethod https://api.github.com/repos/microsoft/winget-cli/releases/latest).assets.browser_download_url | Where-Object {$_.EndsWith(".msixbundle")}
