@@ -9,10 +9,11 @@ $latestWingetZIP = "https://github.com/EmmaTheEmu/EasierWinget/raw/Testing/Winge
 #########################
 
 function Setup-Winget{
-
+$debug2 = [Environment]::UserName
+$debug3 = whoami
     Write-Host "DEBUG: $Env:UserName"
-    Write-Host "DEBUG:" [Environment]::UserName
-    Write-Host "Debug:" whoami
+    Write-Host "DEBUG:" $debug2
+    Write-Host "Debug:" $debug3
     if($Env:UserName -ne "SYSTEM")
     {
         $progressPreference = 'silentlyContinue'
