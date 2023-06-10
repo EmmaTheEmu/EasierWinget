@@ -1,8 +1,18 @@
 #Requires -RunAsAdministrator
 
+<<<<<<< Updated upstream
 #######################
 #Function declerations#
 #######################
+=======
+# Customizable variables incase anything needs to be changed.
+$DownloadFolder = "c:\windows\temp"
+$latestWingetZIP = "https://github.com/EmmaTheEmu/EasierWinget/raw/main/Wingetv1.4.11071.zip"
+
+#########################
+# Function declerations #
+#########################
+>>>>>>> Stashed changes
 
 function Setup-Winget{
     $progressPreference = 'silentlyContinue'
