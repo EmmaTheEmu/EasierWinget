@@ -93,8 +93,13 @@ function Main{
 #Check if Winget is installed.
 Write-Host "Checking for Winget."
 $Winget = Resolve-Path "C:\Program Files\WindowsApps\Microsoft.DesktopAppInstaller_*_x64__*"
-# TODO: Add temp install system user
 
+#If it's not installed, check if the script has been ran before.
+if(!$Winget){
+    $Winget = Resolve-Path "$DownloadFolder\Winget"
+}
+
+#If it's still not there, install it.
 if(!$winget){
     Write-Host "Winget not found!`nInstalling now..."
     $Winget = Setup-Winget
