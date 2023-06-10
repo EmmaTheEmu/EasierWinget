@@ -1,32 +1,50 @@
 #Requires -RunAsAdministrator
-
-<<<<<<< Updated upstream
-#######################
-#Function declerations#
-#######################
-=======
 # Customizable variables incase anything needs to be changed.
 $DownloadFolder = "c:\windows\temp"
 $latestWingetZIP = "https://github.com/EmmaTheEmu/EasierWinget/raw/main/Wingetv1.4.11071.zip"
 
+
 #########################
 # Function declerations #
 #########################
->>>>>>> Stashed changes
 
 function Setup-Winget{
-    $progressPreference = 'silentlyContinue'
-    $latestWingetMsixBundleUri = $(Invoke-RestMethod https://api.github.com/repos/microsoft/winget-cli/releases/latest).assets.browser_download_url | Where-Object {$_.EndsWith(".msixbundle")}
-    $latestWingetMsixBundle = $latestWingetMsixBundleUri.Split("/")[-1]
-    Invoke-WebRequest -Uri $latestWingetMsixBundleUri -OutFile "c:\windows\temp\$latestWingetMsixBundle"
-    Invoke-WebRequest -Uri https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx -OutFile "c:\windows\temp\Microsoft.VCLibs.x64.14.00.Desktop.appx"
-    Add-AppxPackage "c:\windows\temp\Microsoft.VCLibs.x64.14.00.Desktop.appx"
-    Add-AppxPackage "c:\windows\temp\$latestWingetMsixBundle"
+    if($([Environment]::UserName) -ne "SYSTEM")
+    {
+        $progressPreference = 'silentlyContinue'
+        $latestWingetMsixBundleUri = $(Invoke-RestMethod https://api.github.com/repos/microsoft/winget-cli/releases/latest).assets.browser_download_url | Where-Object {$_.EndsWith(".msixbundle")}
+        $latestWingetMsixBundle = $latestWingetMsixBundleUri.Split("/")[-1]
+        Invoke-WebRequest -Uri $latestWingetMsixBundleUri -OutFile "$DownloadFolder\$latestWingetMsixBundle"
+        Invoke-WebRequest -Uri https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx -OutFile "$DownloadFolder\Microsoft.VCLibs.x64.14.00.Desktop.appx"
+        Add-AppxPackage "$DownloadFolder\Microsoft.VCLibs.x64.14.00.Desktop.appx"
+        Add-AppxPackage "$DownloadFolder\$latestWingetMsixBundle"
+
+        Return Resolve-Path "C:\Program Files\WindowsApps\Microsoft.DesktopAppInstaller_*_x64__*"
+    }
+    else {
+        $latestWingetZIPName = $latestWingetZIP.Split("/")[-1]
+        Invoke-WebRequest -Uri $latestWingetZIP -OutFile "$DownloadFolder\$latestWingetZIPName"
+        Expand-Archive -path "$DownloadFolder\$latestWingetZIPName" -DestinationPath $DownloadFolder -ErrorAction SilentlyContinue
+        Remove-Item -path "$DownloadFolder\$latestWingetZIPName"
+        Clear-Host
+
+        Return Resolve-Path "$DownloadFolder\Winget"
+    }
+
 }
 
 function Install-Winget([string]$argument){
     #Hides agreements, uses specific ID and hides installer.
-    & $winget install -e --accept-source-agreements --accept-package-agreements --id "$Argument" -h
+    & $winget install -e --accept-source-agreements --accept-package-agreements --id "$Argument" -h --scope machine
+    if($?)
+    {
+        Write-Host "The Application has been installed successfully!"
+        Start-Sleep 2
+    }
+    else{
+        Write-Host "Error! The application is either already installed or there was an issue installing it." 
+        Start-Sleep 2
+    }
 }
 
 function Search-Winget([string]$argument){
@@ -36,7 +54,7 @@ function Search-Winget([string]$argument){
 }
 function Main{
     Clear-Host
-    Write-Host "Press 0 to quit"
+    Write-Host "Press 0 to quit`n"
 
     $Selection = Read-Host "Enter app name you wish to install"
     if ($Selection -eq "0"){Exit}
@@ -55,7 +73,13 @@ function Main{
         }
     }
     $i = 1
+    # If there are no results, don't ask what to install.
+    if($ResultsFiltered.Count -eq 0){
+        Write-Host "No results found!"
+        Start-sleep 2
+        Return}
     # Lists all items in the array (Unfiltered has empty spaces, that's why it's not used.)
+    Write-Host "0 to go back."
     Foreach($Item in $ResultsFiltered)
     {
         Write-Host $i ' ' $Item
@@ -63,19 +87,29 @@ function Main{
     }
 
     $Selection = Read-Host "Select which app you wish to install"
+    if ($Selection -eq "0"){Return}
     if ($ResultsFiltered[$Selection-1]){
         Install-Winget $ResultsFiltered[$Selection-1]
     }
 }
 
+########################
+# Preparing the script #
+########################
+
 #Check if Winget is installed.
 Write-Host "Checking for Winget."
 $Winget = Resolve-Path "C:\Program Files\WindowsApps\Microsoft.DesktopAppInstaller_*_x64__*"
 
+#If it's not installed, check if the script has been ran before.
+if(!$Winget){
+    $Winget = Resolve-Path "$DownloadFolder\Winget"
+}
+
+#If it's still not there, install it.
 if(!$winget){
     Write-Host "Winget not found!`nInstalling now..."
-    Setup-Winget
-    $Winget = Resolve-Path "C:\Program Files\WindowsApps\Microsoft.DesktopAppInstaller_*_x64__*"
+    $Winget = Setup-Winget
     
     if($winget){
         Write-Host "Winget has been installed!"
