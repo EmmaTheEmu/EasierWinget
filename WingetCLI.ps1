@@ -24,7 +24,7 @@ function Setup-Winget{
     else {
         $latestWingetZIPName = $latestWingetZIP.Split("/")[-1]
         Invoke-WebRequest -Uri $latestWingetZIP -OutFile "$DownloadFolder\$latestWingetZIPName"
-        Expand-Archive -path "$DownloadFolder\$latestWingetZIPName" -DestinationPath $DownloadFolder
+        Expand-Archive -path "$DownloadFolder\$latestWingetZIPName" -DestinationPath $DownloadFolder -ErrorAction SilentlyContinue
         Remove-Item -path "$DownloadFolder\$latestWingetZIPName"
         Clear-Host
 
@@ -54,8 +54,8 @@ function Search-Winget([string]$argument){
 }
 function Main{
     Clear-Host
-    Write-Host "Press 0 to quit"
-    Write-Host "DEBUG: " $winget
+    Write-Host "Press 0 to quit`n"
+
     $Selection = Read-Host "Enter app name you wish to install"
     if ($Selection -eq "0"){Exit}
     
