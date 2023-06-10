@@ -1,8 +1,8 @@
 #Requires -RunAsAdministrator
-
 # Customizable variables incase anything needs to be changed.
 $DownloadFolder = "c:\windows\temp"
-$latestWingetZIP = "https://github.com/EmmaTheEmu/EasierWinget/raw/Testing/Winget%20v1.4.11071.zip"
+$latestWingetZIP = "https://github.com/EmmaTheEmu/EasierWinget/raw/main/Wingetv1.4.11071.zip"
+
 
 #########################
 # Function declerations #
