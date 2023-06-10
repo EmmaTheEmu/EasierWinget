@@ -79,6 +79,7 @@ function Main{
         Start-sleep 2
         Return}
     # Lists all items in the array (Unfiltered has empty spaces, that's why it's not used.)
+    Write-Host "0 to go back."
     Foreach($Item in $ResultsFiltered)
     {
         Write-Host $i ' ' $Item
