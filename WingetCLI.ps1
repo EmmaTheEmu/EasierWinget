@@ -99,11 +99,11 @@ function Main{
 
 #Check if Winget is installed.
 Write-Host "Checking for Winget."
-$Winget = Resolve-Path "C:\Program Files\WindowsApps\Microsoft.DesktopAppInstaller_*_x64__*"
+$Winget = Resolve-Path "C:\Program Files\WindowsApps\Microsoft.DesktopAppInstaller_*_x64__*" -ErrorAction SilentlyContinue
 
 #If it's not installed, check if the script has been ran before.
 if(!$Winget){
-    $Winget = Resolve-Path "$DownloadFolder\Winget"
+    $Winget = Resolve-Path "$DownloadFolder\Winget" -ErrorAction SilentlyContinue
 }
 
 #If it's still not there, install it.
