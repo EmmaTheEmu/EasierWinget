@@ -43,7 +43,7 @@ function Install-Winget([string]$argument){
     }
     else{
         Write-Host "Error! The application is either already installed or there was an issue installing it." 
-        Start-Sleep 2
+        Start-Sleep 4
     }
 }
 
@@ -101,6 +101,13 @@ function Main{
 Write-Host "Checking for Winget."
 $Winget = Resolve-Path "C:\Program Files\WindowsApps\Microsoft.DesktopAppInstaller_*_x64__*" -ErrorAction SilentlyContinue
 
+#Noticed a lot of issues with computers that has Winget on another user.
+#This is to check if current user has rights to the winget folder.
+try {
+    Get-ChildItem $Winget.Path -ErrorAction Stop
+} catch [System.UnauthorizedAccessException] {
+    $Winget = Resolve-Path "$DownloadFolder\Winget" -ErrorAction SilentlyContinue
+}
 #If it's not installed, check if the script has been ran before.
 if(!$Winget){
     $Winget = Resolve-Path "$DownloadFolder\Winget" -ErrorAction SilentlyContinue
