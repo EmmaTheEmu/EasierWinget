@@ -98,41 +98,48 @@ function Main{
 ########################
 
 #Check if Winget is installed.
-Write-Host "Checking for Winget."
-$Winget = Resolve-Path "C:\Program Files\WindowsApps\Microsoft.DesktopAppInstaller_*_x64__*" -ErrorAction SilentlyContinue
-
-#Noticed a lot of issues with computers that has Winget on another user.
-#This is to check if current user has rights to the winget folder.
-try {
-    Get-ChildItem $Winget.Path -ErrorAction Stop
-} catch [System.UnauthorizedAccessException] {
-    $Winget = Resolve-Path "$DownloadFolder\Winget" -ErrorAction SilentlyContinue
-}
-#If it's not installed, check if the script has been ran before.
-if(!$Winget){
-    $Winget = Resolve-Path "$DownloadFolder\Winget" -ErrorAction SilentlyContinue
-}
-
-#If it's still not there, install it.
-if(!$winget){
-    Write-Host "Winget not found!`nInstalling now..."
-    $Winget = Setup-Winget
-    
-    if($winget){
-        Write-Host "Winget has been installed!"
+if($([Environment]::UserName) -eq "SYSTEM")
+{
+    Write-Host "Checking for Winget."
+    $Winget = Resolve-Path "C:\Program Files\WindowsApps\Microsoft.DesktopAppInstaller_*_x64__*" -ErrorAction SilentlyContinue
+    if($Winget)
+    {
+        Write-Host "Winget found!"
         Start-Sleep 2
         Clear-Host
     }
-    else{
-        Write-Host "Failed to install Winget!"
-        return
+
+    if(!$Winget){
+        $Winget = Resolve-Path "$DownloadFolder\Winget" -ErrorAction SilentlyContinue
+
+        if($Winget)
+        {
+            Write-Host "Winget found!"
+            Start-Sleep 2
+            Clear-Host
+        }
+
+        elseif(!$Winget)
+        {
+            $Winget = Setup-Winget
+        }
     }
 }
-else{
-    Write-Host "Winget found!"
-    Start-Sleep 2
-    Clear-Host
+
+elseif ($([Environment]::UserName) -ne "SYSTEM"){
+    $Winget = Resolve-Path "$DownloadFolder\Winget" -ErrorAction SilentlyContinue
+    if($Winget)
+    {
+        Write-Host "Winget found!"
+        Start-Sleep 2
+        Clear-Host
+    }
+
+    if(!$Winget){
+        $Winget = Setup-Winget
+    }
 }
+
 $Winget = $Winget.path + "\winget.exe"
 $Selection = 0
 
