@@ -43,7 +43,13 @@ function Install-Winget([string]$argument){
     }
     else{
         Write-Host "Error! The application is either already installed or there was an issue installing it." 
+        Write-Host "Attempting to install without machine scope. (User may not be able to see this application)"
         Start-Sleep 4
+        & $winget install -e --accept-source-agreements --accept-package-agreements --id "$Argument" -h
+        if(!$?)
+        {
+            Write-Host "Error! Unable to install the application using winget." 
+        }
     }
 }
 
