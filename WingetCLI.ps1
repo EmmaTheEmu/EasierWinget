@@ -19,7 +19,7 @@ function Setup-Winget{
         Add-AppxPackage "$DownloadFolder\Microsoft.VCLibs.x64.14.00.Desktop.appx"
         Add-AppxPackage "$DownloadFolder\$latestWingetMsixBundle"
 
-        Return Resolve-Path "C:\Program Files\WindowsApps\Microsoft.DesktopAppInstaller_*_x64__*"
+        Return Resolve-Path "C:\Program Files\WindowsApps\Microsoft.DesktopAppInstaller_*_x64__*\winget.exe"
     }
     else {
         $latestWingetZIPName = $latestWingetZIP.Split("/")[-1]
@@ -28,7 +28,7 @@ function Setup-Winget{
         Remove-Item -path "$DownloadFolder\$latestWingetZIPName"
         Clear-Host
 
-        Return Resolve-Path "$DownloadFolder\Winget"
+        Return Resolve-Path "$DownloadFolder\Winget\winget.exe"
     }
 
 }
@@ -101,7 +101,7 @@ function Main{
 if($([Environment]::UserName) -eq "SYSTEM")
 {
     Write-Host "Checking for Winget."
-    $Winget = Resolve-Path "C:\Program Files\WindowsApps\Microsoft.DesktopAppInstaller_*_x64__*" -ErrorAction SilentlyContinue
+    $Winget = Resolve-Path "C:\Program Files\WindowsApps\Microsoft.DesktopAppInstaller_*_x64__*\winget.exe" -ErrorAction SilentlyContinue
     if($Winget)
     {
         Write-Host "Winget found!"
@@ -110,7 +110,7 @@ if($([Environment]::UserName) -eq "SYSTEM")
     }
 
     if(!$Winget){
-        $Winget = Resolve-Path "$DownloadFolder\Winget" -ErrorAction SilentlyContinue
+        $Winget = Resolve-Path "$DownloadFolder\Winget\winget.exe" -ErrorAction SilentlyContinue
 
         if($Winget)
         {
@@ -127,7 +127,7 @@ if($([Environment]::UserName) -eq "SYSTEM")
 }
 
 elseif ($([Environment]::UserName) -ne "SYSTEM"){
-    $Winget = Resolve-Path "$DownloadFolder\Winget" -ErrorAction SilentlyContinue
+    $Winget = Resolve-Path "$DownloadFolder\Winget\winget.exe" -ErrorAction SilentlyContinue
     if($Winget)
     {
         Write-Host "Winget found!"
@@ -140,7 +140,6 @@ elseif ($([Environment]::UserName) -ne "SYSTEM"){
     }
 }
 
-$Winget = $Winget.path + "\winget.exe"
 $Selection = 0
 
 #Makes the main function loop infinitely.
