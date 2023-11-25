@@ -1,6 +1,6 @@
 # Customizable variables incase anything needs to be changed.
 $DownloadFolder = "c:\temp"
-$latestWingetZIP = "https://github.com/EmmaTheEmu/EasierWinget/raw/main/Wingetv1.6.3133.zip"
+$latestWingetZIP = "https://raw.githubusercontent.com/EmmaTheEmu/EasierWinget/main/Wingetv1.6.3133.zip"
 
 #########################
 # Function declerations #
