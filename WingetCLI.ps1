@@ -31,6 +31,8 @@ function Setup-Winget
             New-Item -ItemType Directory -Path $DownloadFolder
         }
         $latestWingetZIPName = $latestWingetZIP.Split("/")[-1]
+        # For some reason it takes a bit longer to create the folder than to actually execute the damn code so it causes issues.
+        Start-Sleep 1
         Invoke-WebRequest -Uri $latestWingetZIP -OutFile "$DownloadFolder\$latestWingetZIPName"
         Expand-Archive -path "$DownloadFolder\$latestWingetZIPName" -DestinationPath $DownloadFolder -ErrorAction SilentlyContinue
         Remove-Item -path "$DownloadFolder\$latestWingetZIPName"
