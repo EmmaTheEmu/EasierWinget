@@ -31,7 +31,7 @@ function Setup-Winget
         {
             New-Item -ItemType Directory -Path $DownloadFolder
         }
-        Write-Host Installing Winget as SYSTEM.
+        Write-Host `nInstalling Winget as SYSTEM.
         $latestWingetZIPName = $latestWingetZIP.Split("/")[-1]
         # For some reason it takes a bit longer to create the folder than to actually execute the damn code so it causes issues.
         Invoke-WebRequest -Uri $latestWingetZIP -OutFile "$DownloadFolder\$latestWingetZIPName"
