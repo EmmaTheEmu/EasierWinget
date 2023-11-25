@@ -1,6 +1,6 @@
 # Customizable variables incase anything needs to be changed.
 $DownloadFolder = "c:\temp"
-$latestWingetZIP = "https://github.com/EmmaTheEmu/EasierWinget/raw/main/Wingetv1.5.1881.zip"
+$latestWingetZIP = "https://github.com/EmmaTheEmu/EasierWinget/raw/main/Wingetv1.6.3133.zip"
 
 #########################
 # Function declerations #
@@ -11,28 +11,29 @@ function Setup-Winget
     if($([Environment]::UserName) -ne "SYSTEM")
     {
         $progressPreference = 'silentlyContinue'
-        if(!(Test-Path $DownloadFolder))
+        if(!(Test-Path $DownloadFolder -ErrorAction SilentlyContinue))
         {
             New-Item -ItemType Directory -Path $DownloadFolder
         }
+        Write-Host Installing Winget as User.
         $latestWingetMsixBundleUri = $(Invoke-RestMethod https://api.github.com/repos/microsoft/winget-cli/releases/latest).assets.browser_download_url | Where-Object {$_.EndsWith(".msixbundle")}
         $latestWingetMsixBundle = $latestWingetMsixBundleUri.Split("/")[-1]
         Invoke-WebRequest -Uri $latestWingetMsixBundleUri -OutFile "$DownloadFolder\$latestWingetMsixBundle"
-        Invoke-WebRequest -Uri https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx -OutFile "$DownloadFolder\Microsoft.VCLibs.x64.14.00.Desktop.appx"
-        Add-AppxPackage "$DownloadFolder\Microsoft.VCLibs.x64.14.00.Desktop.appx" -ErrorAction SilentlyContinue
+        Invoke-WebRequest -Uri https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx -OutFile "$DownloadFolder\Microsoft.VCLibs.appx"
+        Add-AppxPackage "$DownloadFolder\Microsoft.VCLibs.appx" -ErrorAction SilentlyContinue
         Add-AppxPackage "$DownloadFolder\$latestWingetMsixBundle" -ErrorAction SilentlyContinue
         Clear-Host
         Return Get-Command winget
     }
     if($([Environment]::UserName) -eq "SYSTEM")
     {
-        if(Test-Path $DownloadFolder)
+        if(!(Test-Path $DownloadFolder -ErrorAction SilentlyContinue))
         {
             New-Item -ItemType Directory -Path $DownloadFolder
         }
+        Write-Host Installing Winget as SYSTEM.
         $latestWingetZIPName = $latestWingetZIP.Split("/")[-1]
         # For some reason it takes a bit longer to create the folder than to actually execute the damn code so it causes issues.
-        Start-Sleep 1
         Invoke-WebRequest -Uri $latestWingetZIP -OutFile "$DownloadFolder\$latestWingetZIPName"
         Expand-Archive -path "$DownloadFolder\$latestWingetZIPName" -DestinationPath $DownloadFolder -ErrorAction SilentlyContinue
         Remove-Item -path "$DownloadFolder\$latestWingetZIPName"
@@ -46,7 +47,7 @@ function Setup-Winget
 function Install-Winget([string]$argument)
 {
     #Hides agreements, uses specific ID and hides installer.
-    & $winget install -e --accept-source-agreements --accept-package-agreements --id "$Argument" -h --scope=machine
+    & $winget.Path install -e --accept-source-agreements --accept-package-agreements --id "$Argument" -h --scope=machine
     if($?)
     {
         Write-Host "The Application has been installed successfully!"
@@ -69,7 +70,7 @@ function Search-Winget([string]$argument)
 {
     #Specified Winget as source, since we only use package names.
     #MS Store Provides bad package names. It's to avoid later confusion.
-    & $winget search --accept-source-agreements -s winget "$argument"
+    & $winget.Path search --accept-source-agreements -s winget "$argument"
 }
 function Main
 {
@@ -128,7 +129,8 @@ if($([Environment]::UserName) -eq "SYSTEM")
         Clear-Host
     }
 
-    if(!$Winget){
+    if(!$Winget)
+    {
         $Winget = Resolve-Path "$DownloadFolder\Winget\winget.exe" -ErrorAction SilentlyContinue
 
         if($Winget)
@@ -138,9 +140,9 @@ if($([Environment]::UserName) -eq "SYSTEM")
             Clear-Host
         }
 
-        elseif(!$Winget)
+        if(!$Winget)
         {
-            $Global:Winget = Setup-Winget
+            $Winget = Setup-Winget
         }
     }
 }
@@ -155,7 +157,8 @@ if ($([Environment]::UserName) -ne "SYSTEM")
         Clear-Host
     }
 
-    if(!$Winget){
+    if(!$Winget)
+    {
         $Winget = Setup-Winget
     }
 }
